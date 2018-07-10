@@ -25,14 +25,14 @@ const double ref_cte  = 0;
 const double ref_epsi = 0;
 const double ref_v    = 100;
 
-const int x_start     = 0;
-const int y_start     = N;
-const int psi_start   = 2 * N;
-const int v_start     = 3 * N;
-const int cte_start   = 4 * N;
-const int epsi_start  = 5 * N;
-const int delta_start = 6 * N;
-const int a_start     = 7 * N - 1;
+const unsigned int x_start     = 0;
+const unsigned int y_start     = N;
+const unsigned int psi_start   = 2 * N;
+const unsigned int v_start     = 3 * N;
+const unsigned int cte_start   = 4 * N;
+const unsigned int epsi_start  = 5 * N;
+const unsigned int delta_start = 6 * N;
+const unsigned int a_start     = 7 * N - 1;
 
 class FG_eval {
  public:
@@ -83,7 +83,7 @@ class FG_eval {
     fg[1 + cte_start] = vars[cte_start];
     fg[1 + epsi_start] = vars[epsi_start];
 
-    for (int t = 1; t < N; t++) {
+    for (unsigned int t = 1; t < N; t++) {
       // The state at time t+1 .
       AD<double> x1 = vars[x_start + t];
       AD<double> y1 = vars[y_start + t];
@@ -135,7 +135,6 @@ MPC::~MPC() {}
 
 vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   bool ok = true;
-  size_t i;
   typedef CPPAD_TESTVECTOR(double) Dvector;
 
   double x    = state[0];
@@ -157,7 +156,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   // Initial value of the independent variables.
   // SHOULD BE 0 besides initial state.
   Dvector vars(n_vars);
-  for (int i = 0; i < n_vars; i++) {
+  for (unsigned int i = 0; i < n_vars; i++) {
     vars[i] = 0;
   }
 
@@ -166,7 +165,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   // TODO: Set lower and upper limits for variables.
 
   // BOundary for non-actuator values is min/max negative
-  double bound_non_actuator = 1.0e-19;
+  double bound_non_actuator = 1.0e19;
 
   // Boundary for delta are +/- 25 degrees (in radians)
   double bound_delta = 0.43632 * Lf;
@@ -174,24 +173,26 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   // Boundaries for actuator is +/- 1
   double bound_a = 1.0;
 
-  for (int i = 0; i < n_vars; i++) { 
+  for (unsigned int i = 0; i < n_vars; i++) { 
      if (i < delta_start) { 
-        vars_lowerbound[i] = -bound_non_actuator;
+        vars_lowerbound[i] = -1.0 * bound_non_actuator;
         vars_upperbound[i] =  bound_non_actuator;
      } else if (i < a_start) { 
-        vars_lowerbound[i] = -bound_delta;
+        vars_lowerbound[i] = -1.0 * bound_delta;
         vars_upperbound[i] =  bound_delta;
      } else {
-        vars_lowerbound[i] = -bound_a;
+        vars_lowerbound[i] = -1.0 * bound_a;
         vars_upperbound[i] =  bound_a;
      }
+
+     // std::cout << i << " " << vars_lowerbound[i] << " " << vars_upperbound[i] << "\n"; 
   }
 
   // Lower and upper limits for the constraints
   // Should be 0 besides initial state.
   Dvector constraints_lowerbound(n_constraints);
   Dvector constraints_upperbound(n_constraints);
-  for (int i = 0; i < n_constraints; i++) {
+  for (unsigned int i = 0; i < n_constraints; i++) {
     constraints_lowerbound[i] = 0;
     constraints_upperbound[i] = 0;
   }
@@ -256,7 +257,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   result.push_back(solution.x[delta_start]);
   result.push_back(solution.x[a_start]);
 
-  for ( int i = 0; i < N - 2; i++ ) {
+  for (unsigned int i = 0; i < N - 2; i++ ) {
     result.push_back(solution.x[x_start + i + 1]);
     result.push_back(solution.x[y_start + i + 1]);
   }
