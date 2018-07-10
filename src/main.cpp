@@ -114,7 +114,7 @@ int main() {
              double delta_x = ptsx[i] - px;
              double delta_y = ptsy[i] - py;    
              ptsx_transformed[i] = delta_x * cos_neg_psi - delta_y * sin_neg_psi; 
-             ptsx_transformed[i] = delta_x * sin_neg_psi + delta_y * cos_neg_psi; 
+             ptsy_transformed[i] = delta_x * sin_neg_psi + delta_y * cos_neg_psi; 
           }
 
           // Fit polynomial to the transformed points, use 3rd order polynomial
@@ -132,7 +132,7 @@ int main() {
           double y_after = y_init + v * sin(psi_init) * actuator_delay_s;
           double psi_after = psi_init - v * steering_angle * actuator_delay_s / mpc.Lf;
           double v_after = v + throttle * actuator_delay_s;
-          double cte_after = cte_init + v * sin(epsi_init) * actuator_delay_s / mpc.Lf;
+          double cte_after = cte_init + v * sin(epsi_init) * actuator_delay_s;
           double epsi_after = epsi_init - v * atan(poly_coeffs[1]) * actuator_delay_s / mpc.Lf;
 
           // State vector with the values after the actuator delay
