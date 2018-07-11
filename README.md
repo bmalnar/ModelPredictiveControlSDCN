@@ -65,6 +65,7 @@ json msgJson;
 msgJson["steering_angle"] = steer_value / deg2rad(25);
 msgJson["throttle"] = throttle_value;
 ```
+- Note that the JSON message sent back from the program to the simulator also contains the MPC predicted trajectory (displayed with green color in the simulator), and the reference line based on the polynomial fit (yellow line in the simulator). These are used strictly for visualization, i.e. sanity checking that our MPC algorithm produces reasonable results. 
 
 ### Setting up the environment 
 - The project is configured to compile with cmake and make. Please make sure that the following dependencies are met:
