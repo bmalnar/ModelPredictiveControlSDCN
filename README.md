@@ -33,4 +33,4 @@ The constraints are set up such that the steering delta and the throttle delta a
    - [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page). This is already part of the repo so you shouldn't have to worry about it.
    
 ### More information
-For even more information on the project structure, dependencies etc. please check original Udacity project [repository](https://github.com/udacity/CarND-PID-Control-Project)
+For even more information on the project structure, dependencies etc. please check original Udacity project [repository](https://github.com/udacity/CarND-MPC-Project)
