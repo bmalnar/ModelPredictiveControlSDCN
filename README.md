@@ -9,6 +9,7 @@ Once we found the trajectory with the lowest cost, we implement the first set of
 As shown in the following picture, MPC uses the initial state (left), the Model, the Constraints and the Cost function, and based on that it returns the vector of control inputs that minimize the given cost function. 
 
 <img src="images/MPC_loop.png" width="700" alt="MPC loop equations" />
+*(The image is taken from the Udacity course material)*
 
 The cost function comprises of several components with the goal to:
 - Be as close as possible to the reference state (zero cross track error, zero heading error, maintain the constant velocity)
