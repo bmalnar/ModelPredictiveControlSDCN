@@ -157,7 +157,7 @@ At the same time, the Udacity simulator needs to be running, so that the simulat
 
 <img src="images/sim.png" width="700" alt="Simulator Screenshot" />
 
-If the program is running and the simulator is also running, the two establish communication and the vehicle in the simulator starts to move, as depicted below. The green and yellow lines are displayed to show the MPC trajectory and the polyfit trajectory, respectively, as described above in the code section. At every simulation step we can see the values for the steering angle and the speed of the vehicle. 
+If the program is running and the simulator is also running, the two establish communication and the vehicle in the simulator starts to move, as depicted below. The green and yellow lines are displayed to show the MPC trajectory and the polyfit trajectory, respectively, as described above in the code section. At every simulation step we can also see the values for the steering angle and the speed of the vehicle. 
 
 <img src="images/sim2.png" width="700" alt="Simulator Screenshot" />
 
