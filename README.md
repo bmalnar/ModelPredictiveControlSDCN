@@ -72,10 +72,27 @@ msgJson["throttle"] = throttle_value;
 In the file _MPC.cpp_ there are two main code blocks: one to define the *FG_eval* class, and one to define the _Solve()_ function. Apart from that, in this file we also **define the number of timestemps and the duration of one timestep**. In this case, the values are 10 and 100ms, respectively, which are obtained by experimenting a bit with the values, but keeping the product of N and dT at a constant (to always be 1 second).    
 - The Solve() function takes the vehicle's state and the fitted polynomial to the waypoints, defines the cost function and the vectors of variables and the constraints, and computes the actuation inputs that minimize the cost function (taking the constraints into account). 
 - The number of variables in the model is 46, as given with the following equation (NOTE: the state vector has 6 elements, namely *x, y, psi, v, cte, and epsi*):
-'''
+```
 size_t n_vars = 6 * N + 2 * (N - 1);
-'''
-- Similarly, the number of contraints is equal to 120: there are 10 timestamps and 6 values in the state vector, and we need to constrain 2 bounds (upper and lower). Hence, the number of constraints equals 10x6x2 = 120.   
+```
+- Similarly, the number of contraints is equal to 120: there are 10 timestamps and 6 values in the state vector, and we need to constrain 2 bounds (upper and lower). Hence, the number of constraints equals 10x6x2 = 120. 
+- The variables need to have their bounds specified for the model. Essentially, only _delta_ and _a_ are bounded, by +/-25 degrees and +/-1, respectively. All other variables are unbounded (i.e. their bounds are set to a very large number, +/-1.0e19)
+- The lower and upper bounds of the constraints are set to zero for all the states, apart from the initial state, where the bounds are set to the actual initial state values. 
+- After setting up the variables, the variables bounds and the constraints bounds, we can call the function _solve()_ to obtain the solution, and then from the solution we simply extract the values for _delta_ and _a_ for the first step and return that to the main program. These values are used as actuation values sent back to the simulator. We also extract _x_ and _y_ for all the timesteps, and these values are essentially the MPC predicted trajectory that is sent back to the simulator from the main program and displayed in the simulator as the green line.  
+```
+CppAD::ipopt::solve<Dvector, FG_eval>(
+      options, vars, vars_lowerbound, vars_upperbound, constraints_lowerbound,
+      constraints_upperbound, fg_eval, solution);
+...
+vector<double> result;
+result.push_back(solution.x[delta_start]);
+result.push_back(solution.x[a_start]);
+for (unsigned int i = 0; i < N - 2; i++ ) {
+   result.push_back(solution.x[x_start + i + 1]);
+   result.push_back(solution.x[y_start + i + 1]);
+}
+return result;
+```
 
 
 
