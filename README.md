@@ -144,5 +144,22 @@ int cost_factor_smooth_a     = 5000;
    - **Ipopt and CppAD:** Please refer to [this document](https://github.com/udacity/CarND-MPC-Project/blob/master/install_Ipopt_CppAD.md) for installation instructions.
    - [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page). This is already part of the repo so you shouldn't have to worry about it.
    
+### How to run the program
+
+After cloning this repository and setting up the environment (as described in the previous section), simply execute the following commands to build and run the program:
+```
+mkdir build
+cd build
+cmake ..
+make
+```
+At the same time, the Udacity simulator needs to be running, so that the simulator and the main MPC program exchange information. When the simulator starts and the graphics settings are chosen, the scenario "Project 5: MPC Controller" needs to be chosen, please see the picture below. 
+
+<img src="images/sim.png" width="700" alt="Simulator Screenshot" />
+
+If the program is running and the simulator is also running, the two establish communication and the vehicle in the simulator starts to move, as depicted below. The green and yellow lines are displayed to show the MPC trajectory and the polyfit trajectory, respectively, as described above in the code section. At every simulation step we can see the values for the steering angle and the speed of the vehicle. 
+
+<img src="images/sim2.png" width="700" alt="Simulator Screenshot" />
+
 ### More information
 For even more information on the project structure, dependencies etc. please check original Udacity project [repository](https://github.com/udacity/CarND-MPC-Project)
