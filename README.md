@@ -67,6 +67,18 @@ msgJson["throttle"] = throttle_value;
 ```
 - Note that the JSON message sent back from the program to the simulator also contains the MPC predicted trajectory (displayed with green color in the simulator), and the reference line based on the polynomial fit (yellow line in the simulator). These are used strictly for visualization, i.e. sanity checking that our MPC algorithm produces reasonable results. 
 
+##### The content of _MPC.cpp__
+
+In the file _MPC.cpp_ there are two main code blocks: one to define the *FG_eval* class, and one to define the _Solve()_ function. Apart from that, in this file we also **define the number of timestemps and the duration of one timestep**. In this case, the values are 10 and 100ms, respectively, which are obtained by experimenting a bit with the values, but keeping the product of N and dT at a constant (to always be 1 second).    
+- The Solve() function takes the vehicle's state and the fitted polynomial to the waypoints, defines the cost function and the vectors of variables and the constraints, and computes the actuation inputs that minimize the cost function (taking the constraints into account). 
+- The number of variables in the model is 46, as given with the following equation (NOTE: the state vector has 6 elements, namely *x, y, psi, v, cte, and epsi*):
+'''
+size_t n_vars = 6 * N + 2 * (N - 1);
+'''
+- Similarly, the number of contraints is equal to 120: there are 10 timestamps and 6 values in the state vector, and we need to constrain 2 bounds (upper and lower). Hence, the number of constraints equals 10x6x2 = 120.   
+
+
+
 ### Setting up the environment 
 - The project is configured to compile with cmake and make. Please make sure that the following dependencies are met:
    - cmake version 3.5
