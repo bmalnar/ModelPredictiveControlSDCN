@@ -67,7 +67,7 @@ msgJson["throttle"] = throttle_value;
 ```
 - Note that the JSON message sent back from the program to the simulator also contains the MPC predicted trajectory (displayed with green color in the simulator), and the reference line based on the polynomial fit (yellow line in the simulator). These are used strictly for visualization, i.e. sanity checking that our MPC algorithm produces reasonable results. 
 
-##### The content of _MPC.cpp__
+##### The content of _MPC.cpp_
 
 In the file _MPC.cpp_ there are two main code blocks: one to define the *FG_eval* class, and one to define the _Solve()_ function. Apart from that, in this file we also **define the number of timestemps and the duration of one timestep**. In this case, the values are 10 and 100ms, respectively, which are obtained by experimenting a bit with the values, but keeping the product of N and dT at a constant (to always be 1 second).    
 - The Solve() function takes the vehicle's state and the fitted polynomial to the waypoints, defines the cost function and the vectors of variables and the constraints, and computes the actuation inputs that minimize the cost function (taking the constraints into account). 
@@ -94,7 +94,41 @@ for (unsigned int i = 0; i < N - 2; i++ ) {
 return result;
 ```
 
-
+##### The cost function
+As stated above, the cost function is defined to keep the vehicle to the reference position as close as possible, and to make sure that the actuation is reasonable, i.e. that we get smooth operation of the vehicle by the actuator. The reference position essentially means that the CTE error and the heading error are equal to zero, and that the vehicle maintains the constant velocity when going around the tracks. 
+```
+const double ref_cte  = 0;
+const double ref_epsi = 0;
+const double ref_v    = 100;
+```
+Different cost function components can be weighted with different factors, and these factors can be obtained experimentally. The entire cost function can be defined with the following piece of code in _MPC.cpp_:
+```
+fg[0] = 0;
+// Add the cost associated with the deviation to the reference state
+for (unsigned int i = 0; i < N; i++) {
+  fg[0] += cost_factor_ref_state * CppAD::pow(vars[cte_start + i] - ref_cte, 2);
+  fg[0] += cost_factor_ref_state * CppAD::pow(vars[epsi_start + i] - ref_epsi, 2);
+  fg[0] += CppAD::pow(vars[v_start + i] - ref_v, 2);
+}
+// Add the cost associated with the actuator values
+for (unsigned int i = 0; i < N - 1; i++) {
+  fg[0] += cost_factor_actuator * CppAD::pow(vars[delta_start + i], 2);
+  fg[0] += cost_factor_actuator * CppAD::pow(vars[a_start + i], 2);
+}
+// Add the cost associated with the actuator deltas
+for (unsigned int i = 0; i < N - 2; i++) {
+  fg[0] += cost_factor_smooth_delta * CppAD::pow(vars[delta_start + i + 1] - vars[delta_start + i], 2);
+  fg[0] += cost_factor_smooth_a * CppAD::pow(vars[a_start + i + 1] - vars[a_start + i], 2);
+}
+```
+Here, the weighting factors are defines as:
+```
+// Factors for cost scaling
+int cost_factor_ref_state    = 1000;
+int cost_factor_actuator     = 50;
+int cost_factor_smooth_delta = 250000;
+int cost_factor_smooth_a     = 5000;
+```
 
 ### Setting up the environment 
 - The project is configured to compile with cmake and make. Please make sure that the following dependencies are met:
